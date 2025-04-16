@@ -6,6 +6,9 @@ const mongoose = require("mongoose");
 const Redis = require("ioredis");
 const helmet = require("helmet");
 const cors = require("cors");
+const { RateLimiterRedis } = require('rate-limiter-flexible');
+const { rateLimit } = require('express-rate-limit');
+const { RedisStore } = require('rate-limit-redis');
 //const postRoutes
 const errorHandler = require("./middleware/errorHandler");
 const logger = require("./utils/logger");
@@ -45,5 +48,25 @@ app.use((req, res, next) => {
 });
 
 // IP based rate limiting for sensitive endpoints
-const sensitiveEndpointsLimiter = rateLimit
+const sensitiveEndpointsLimiter = rateLimit({
+    windowsMs: 15 * 60 * 1000, 
+    limit: 50,
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res) => {
+        logger.warn(`Sensitive endpoint rate limit exceeded for ip ${req.ip}`);
+        res.status(429).json({
+            success: false,
+            message: "too many requests"
+        });
+    },
+    store: new RedisStore({
+        sendCommand: (...args) => redisClient.call(...args),
+    })
+});
+
+// apply sentitive endpoint rate limiting to specific routes
+app.use("/api/posts", sensitiveEndpointsLimiter);
+
+
 
