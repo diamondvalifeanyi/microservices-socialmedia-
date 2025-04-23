@@ -63,7 +63,7 @@ const getAllPosts = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const startIndex = (page - 1) * limit;
 
-        const cachekey = `posts:${page}:${limit}`;
+        const cacheKey = `posts:${page}:${limit}`;
         const cachedPosts = await req.redisClient.get(cacheKey);
 
         if (cachedPosts) {
