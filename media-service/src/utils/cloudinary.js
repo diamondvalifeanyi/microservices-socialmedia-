@@ -2,9 +2,9 @@ const cloudinary = require("cloudinary").v2;
 const logger = require("./logger");
 
 cloudinary.config({
-    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
-    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
-    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.cloud_name,
+  api_key: process.env.api_key,
+  api_secret: process.env.api_secret,
 });
 
 const uploadImage = (file) => {
@@ -23,7 +23,7 @@ const uploadImage = (file) => {
         }
     );
     
-    uploadStream.end(file.Buffer);
+    uploadStream.end(file.buffer);
     });
 };
 

@@ -13,7 +13,7 @@ const searchRoutes = require("./routes/search-routes");
 const { handlePostCreated, handlePostDeleted } = require("./eventHandlers/search-event-handlers");
 
 const app = express();
-const PORT = process.env.PORT || 3004
+const PORT = process.env.PORT || 4004
 
 const redisClient = new Redis(process.env.REDIS_URL);
 
@@ -24,9 +24,20 @@ app.use(express.json());
 
 app.use((req, res, next) => {
     logger.info(`Received ${req.method} request to ${req.url}`);
-    logger.info(`Request body ${req.body}`);
+    logger.info(`Request body ${JSON.stringify(req.body)}`);
+    req.redisClient = redisClient;
     next();
 });
+
+// app.use((req, res, next) => {
+//   logger.info({
+//     method: req.method,
+//     url: req.url,
+//     body: req.body,
+//   });
+//   req.redisClient = redisClient;
+//   next();
+// });
 
 app.use("/api/search", searchRoutes);
 

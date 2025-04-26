@@ -5,7 +5,7 @@ const { validateCreatePost } = require("../utils/validation");
 
 async function invalidatePostCache(req, input) {
     const cacheKey = `post:${input}`;
-    await req.redisClient.del(cachedKey);
+    await req.redisClient.del(cacheKey);
 
     const keys = await req.redisClient.keys("posts:*");
     if(keys.length > 0) {
@@ -27,7 +27,7 @@ const createPost = async (req, res) => {
         }
         const { content, mediaIds } = req.body;
         const newlyCreatedPost = new Post({
-            user: req.user.userid,
+            user: req.user.userId,
             content,
             mediaIds: mediaIds || [],
         }) ;
@@ -36,7 +36,7 @@ const createPost = async (req, res) => {
 
         await publishEvent("post.created", {
             postId: newlyCreatedPost._id.toString(),
-            userId: newlyCreatedpost.user.toString(),
+            userId: newlyCreatedPost.user.toString(),
             content: newlyCreatedPost.content,
             createdAt: newlyCreatedPost.createdAt,
         });
@@ -74,6 +74,13 @@ const getAllPosts = async (req, res) => {
             .skip(startIndex)
             .limit(limit);
 
+            if (posts.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: "No posts found"
+                });
+            }
+
             const totalNoOfPosts = await Post.countDocuments();
 
             const result = {
@@ -100,7 +107,7 @@ const getPost = async (req, res) => {
     try {
         const postId = req.params.id;
         const cacheKey = `post:${postId}`;
-        const cachedPost =await req.redisClient.get(cachekey);
+        const cachedPost =await req.redisClient.get(cacheKey);
 
         if(cachedPost) {
             return res.json(JSON.parse(cachedPost));

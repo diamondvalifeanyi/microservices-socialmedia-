@@ -20,7 +20,7 @@ async function connectToRabbitMQ() {
     }
 }
 
-async function consumeEvent(routingKey, callack) {
+async function consumeEvent(routingKey, callback) {
     if(!channel) {
         await connectToRabbitMQ();
     }

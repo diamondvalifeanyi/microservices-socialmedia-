@@ -15,7 +15,7 @@ const logger = require("./utils/logger");
 const { connectToRabbitMQ } = require("./utils/rabbitmq")
 
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 4002;
 
 const redisClient = new Redis(process.env.REDIS_URL);
 
@@ -26,7 +26,7 @@ app.use(express.json());
 
 app.use((req, res, next) => {
     logger.info(`Received ${req.method} request to ${req.url}`);
-    logger.info(`Request body, ${req.body}`);
+    logger.info(`Request body, ${JSON.stringify(req.body)}`);
     next();
 });
 

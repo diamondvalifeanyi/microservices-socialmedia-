@@ -12,7 +12,7 @@ const routes = require('./routes/identity-routes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 4001;
 
 const redisClient = new Redis(process.env.REDIS_URL);
 
@@ -22,7 +22,7 @@ app.use(express.json());
 
 app.use((req, res, next) => {
     logger.info(`received ${req.method} request to ${req.url}`);
-    logger.info(`Request body, ${req.url}`);
+    logger.info(`Request body, ${JSON.stringify(req.body)}`);
     next();
 })
 
